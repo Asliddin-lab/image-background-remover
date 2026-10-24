@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ClearBG - AI & Chroma Image Background Remover</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        <div class="logo-icon">✨</div>
+        <div class="brand-text">
+          <h1>ClearBG</h1>
+          <span class="badge">AI & FFmpeg Powered</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <a href="https://github.com" id="gh-link" target="_blank" rel="noopener noreferrer" class="btn-github">
+          <svg height="18" width="18" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+          <span>Star on GitHub ⭐</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="main-content">
+      <!-- Upload Dropzone (visible initially) -->
+      <section class="upload-section" id="upload-zone">
+        <div class="dropzone-card">
+          <input type="file" id="file-input" accept="image/*" class="file-input-hidden" />
+          <div class="drop-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
+          <h2>Drag & drop your image here</h2>
+          <p class="subtitle">Supports JPG, PNG, WEBP, BMP up to 50MB</p>
+          <button type="button" class="btn btn-primary" id="btn-browse">Browse Image</button>
+
+          <div class="features-pill-row">
+            <span class="feature-tag">⚡ Fast On-Device AI</span>
+            <span class="feature-tag">🎯 Precision Cutouts</span>
+            <span class="feature-tag">🔒 100% Private</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Processing & Workspace Stage (hidden until file selected) -->
+      <section class="workspace-section" id="workspace-stage" style="display: none;">
+        <!-- Controls Bar -->
+        <div class="controls-panel card">
+          <div class="control-group">
+            <label for="select-model">Model Engine</label>
+            <select id="select-model" class="form-select">
+              <option value="u2net" selected>U2Net (General Objects / People)</option>
+              <option value="u2net_human_seg">U2Net Human (Portraits & People)</option>
+              <option value="isnet-general-use">IS-Net (Ultra Crisp Edges)</option>
+              <option value="silueta">Silueta (Fast & Lightweight)</option>
+              <option value="colorkey">Chroma / Solid Color Key</option>
+            </select>
+          </div>
+
+          <div class="control-group" id="colorkey-settings" style="display: none;">
+            <label>Key Color</label>
+            <div class="input-with-color">
+              <input type="color" id="key-color-picker" value="#00FF00" />
+              <input type="text" id="key-color-text" value="#00FF00" class="form-input" />
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label>Background Fill</label>
+            <div class="color-presets">
+              <button class="color-swatch active" data-color="transparent" title="Transparent" style="background: repeating-conic-gradient(#bbb 0% 25%, #fff 0% 50%) 50% / 12px 12px;"></button>
+              <button class="color-swatch" data-color="#FFFFFF" title="Pure White" style="background: #ffffff;"></button>
+              <button class="color-swatch" data-color="#F4F4F6" title="Studio Gray" style="background: #f4f4f6;"></button>
+              <button class="color-swatch" data-color="#0F172A" title="Obsidian Dark" style="background: #0f172a;"></button>
+              <button class="color-swatch" data-color="#FF5E62" title="Sunset Coral" style="background: #ff5e62;"></button>
+              <button class="color-swatch" data-color="#00FFA3" title="Cyber Neon" style="background: #00ffa3;"></button>
+              <input type="color" id="custom-bg-color" class="color-picker-input" title="Custom color" />
+            </div>
+          </div>
+
+          <div class="control-group toggles-row">
+            <label class="toggle-label" title="Refines fine edges like hair and fur">
+              <input type="checkbox" id="check-matting" />
+              <span>Alpha Matting</span>
+            </label>
+            <label class="toggle-label" title="Crop transparent space closely around subject">
+              <input type="checkbox" id="check-crop" />
+              <span>Auto Crop</span>
+            </label>
+          </div>
+
+          <div class="control-group buttons-col">
+            <button class="btn btn-primary" id="btn-reprocess">
+              <span id="reprocess-text">Apply Changes</span>
+              <div class="spinner" id="reprocess-spinner" style="display: none;"></div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Preview Stage with Before/After Slider -->
+        <div class="preview-area card">
+          <div class="preview-header">
+            <div class="preview-tabs">
+              <button class="tab-btn active" id="tab-slider">Comparison Slider</button>
+              <button class="tab-btn" id="tab-result">Result Only</button>
+              <button class="tab-btn" id="tab-original">Original</button>
+            </div>
+            <div class="preview-actions">
+              <button class="btn btn-secondary btn-sm" id="btn-upload-another">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Upload New
+              </button>
+              <a id="btn-download" download="nobg.png" class="btn btn-accent btn-sm">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download PNG
+              </a>
+            </div>
+          </div>
+
+          <!-- Slider Container -->
+          <div class="comparison-container" id="comparison-box">
+            <!-- Background result layer -->
+            <div class="canvas-layer result-layer" id="result-wrapper">
+              <img id="img-result" alt="Result" />
+            </div>
+
+            <!-- Foreground original clipped layer -->
+            <div class="canvas-layer original-layer" id="original-wrapper">
+              <img id="img-original" alt="Original" />
+            </div>
+
+            <!-- Slider Divider Handle -->
+            <div class="slider-handle" id="slider-handle">
+              <div class="handle-line"></div>
+              <div class="handle-knob">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/><polyline points="9 18 3 12 9 6" transform="translate(15,0) scale(-1,1)"/></svg>
+              </div>
+            </div>
+
+            <!-- Loading overlay -->
+            <div class="loading-overlay" id="loading-overlay" style="display: none;">
+              <div class="loading-spinner"></div>
+              <p id="loading-message">Removing background...</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>Created with Python, Rembg ONNX & FFmpeg • <strong>Give a star ⭐ if you liked it!</strong></p>
+    </footer>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

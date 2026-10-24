@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "image-background-remover"
+version = "1.0.0"
+description = "High-performance Image Background Remover powered by AI, Chroma/Colorkey & FFmpeg"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "Asliddin" }
+]
+dependencies = [
+    "Pillow>=9.5.0",
+    "rembg>=2.0.50",
+    "onnxruntime>=1.15.0",
+    "numpy>=1.21.0",
+    "Flask>=2.3.0",
+    "tqdm>=4.65.0",
+    "click>=8.0.0",
+]
+
+[project.scripts]
+bg-remover = "bg_remover.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

@@ -1,0 +1,33 @@
+# Environments
+.venv/
+env/
+venv/
+ENV/
+
+# Python cache & artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Build & packaging
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Operating System
+.DS_Store
+Thumbs.db
+
+# Output & test scratch files
+mock_input_products/
+mock_output_nobg/
+sample_subject.png
+output_*.png
+output_*.jpg
+test_*.png
+*.log
